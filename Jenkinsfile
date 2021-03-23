@@ -1,38 +1,40 @@
-def gv
-
 pipeline {
-    agent any
+    agent none
     stages {
-        stage("init") {
+        stage('Select micro services') {
+            input {
+                message "Select all micro services to deploy"
+                ok "All selected!"
+                parameters {
+                    choice(name: 'MS1', choices: ['1.1.0', '1.2.0', '1.3.0'], description: 'input ms')
+                    choice(name: 'MS2', choices: ['1.1.0', '1.2.0', '1.3.0'], description: 'input ms')
+                    choice(name: 'MS3', choices: ['1.1.0', '1.2.0', '1.3.0'], description: 'input ms')
+                }
+            }
             steps {
-                script {
-                    gv = load "script.groovy"
+                script {   
+                    echo "Hello, ${MS1}. Hello, ${MS2}. Hello, ${MS3}."
+                    MS1_TO_DEPLOY = MS1
+                    MS2_TO_DEPLOY = MS2
+                    env.MS3_TO_DEPLOY = MS3     
                 }
             }
         }
-        stage("build jar") {
+        stage('Select single service') {
+            input {
+                message "Select single micro services to deploy?"
+                parameters {
+                    choice(name: 'MS5', choices: ['1.1.0', '1.2.0', '1.3.0'], description: 'second param with single option')   
+                }
+            }
             steps {
                 script {
-                    echo "building jar"
-                    //gv.buildJar()
+                    echo "Hello, ${MS5}."  
+                    env.MS5_TO_DEPLOY = MS5
+                    echo "${MS1_TO_DEPLOY}"
+                    echo "${MS5_TO_DEPLOY}"  
                 }
             }
         }
-        stage("build image") {
-            steps {
-                script {
-                    echo "building image"
-                    //gv.buildImage()
-                }
-            }
-        }
-        stage("deploy") {
-            steps {
-                script {
-                    echo "deploying"
-                    //gv.deployApp()
-                }
-            }
-        }
-    }   
+    }
 }
